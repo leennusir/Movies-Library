@@ -141,8 +141,6 @@ function addMovie (req,res){
     client.query(sql,values).then(()=>{
         return res.status(200).send("success")
     })
-
-
 }
 app.get("/getMovies",getMovies);
 function getMovies (req,res){
@@ -150,8 +148,40 @@ function getMovies (req,res){
     client.query(sql).then(data=>{
         return res.status(200).json(data.rows)
     }) 
+}
+
+app.put("/moveUpdate/:id",moveUpdateById);
+function moveUpdateById (req,res){
+    const body = req.body;
+    const sql = `UPDATE movies
+    SET title = $1, description=$2
+    WHERE moveid=${req.params.id};`;//update value
+    const values = [body.title,body.description]
+    client.query(sql,values).then(()=>{
+        return res.status(200).send("success")
+    })
+}
+
+app.delete("/moveDelete/:id",moveDelete);
+function moveDelete(req,res){
+    const sql = `DELETE FROM movies WHERE moveid=${req.params.id}`;
+    client.query(sql).then(()=>{
+        return res.status(200).send()
+    }) 
+    
 
 }
+
+app.get("/getMovies/:id",getMoviesById);//get value dend on id
+function getMoviesById (req,res){
+    const sql = `select * from movies where moveid=${req.params.id}`;
+    client.query(sql).then(data=>{
+        return res.status(200).json(data.rows)
+    }) 
+
+}
+
+
 
 //Handle errors
 app.use("*",errorNotFound);
