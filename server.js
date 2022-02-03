@@ -4,6 +4,13 @@ const express = require ("express"); //import library make server
 const app = express();// call node.js
 const axios = require("axios"); //Api
 
+const pg = require("pg");// call pgPostgress
+const client = new pg.Client("postgres://student:x@localhost:5432/student");//connect nodeJs to postgress 
+                                                                           //select DB connect to odejs
+
+const bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({ extended: false }));//avtivation for library
+app.use(bodyParser.json());// obj-->json
 
  // json file must convert to constructor
 function Move(title,original_language,original_title,poster_path,video,vote_average,overview,release_date,
@@ -24,6 +31,7 @@ function Move(title,original_language,original_title,poster_path,video,vote_aver
         this.media_type = media_type;
     }
 const dataMove = require("./Movie Data/data.json");// require =>call files
+
 app.get("/",home); //route = /:end point , type: get
 function home (req,res){
     let move = new Move(dataMove.title,dataMove.original_language,dataMove.original_title,dataMove.poster_path,
@@ -120,9 +128,29 @@ value.data.results.forEach(element => {
         regions.push(region);
 });
 return res.status(200).json(regions);
-
-
 });
+}
+
+
+app.post("/addMovie",addMovie);
+function addMovie (req,res){
+    console.log(req.body.test);//place that i set data and send to route //body=>post man
+    const body = req.body;
+    const sql = `INSERT INTO movies (title, description) values ($1,$2)`;
+    const values = [body.title,body.description] //create and updatae
+    client.query(sql,values).then(()=>{
+        return res.status(200).send("success")
+    })
+
+
+}
+app.get("/getMovies",getMovies);
+function getMovies (req,res){
+    const sql = `select * from movies`;//get value
+    client.query(sql).then(data=>{
+        return res.status(200).json(data.rows)
+    }) 
+
 }
 
 //Handle errors
@@ -130,7 +158,11 @@ app.use("*",errorNotFound);
 function errorNotFound(req,res){
     res.status(404).send("Teeest");
 }
-app.listen(3003,()=>{ //run local server (i can bulit my web site) port : any number
-    console.log("serever run");
-});
 
+
+client.connect().then(()=>{
+    app.listen(3003,()=>{ //run local server (i can bulit my web site) port : any number
+
+        console.log("serever run");
+        });
+});
