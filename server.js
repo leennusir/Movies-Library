@@ -5,8 +5,11 @@ const app = express();// call node.js
 const axios = require("axios"); //Api
 
 const pg = require("pg");// call pgPostgress
-const client = new pg.Client("postgres://student:x@localhost:5432/student");//connect nodeJs to postgress 
-                                                                           //select DB connect to odejs
+
+                                                                    
+const client = new pg.Client({ connectionString:"postgres://wrwcyfxovquyel:f6e5ee371d80f80fe72decd155cf256808525111bad148238924e0fd5f0af188@ec2-99-81-177-233.eu-west-1.compute.amazonaws.com:5432/dbc7hq2c8phk3k",
+    ssl: { rejectUnauthorized: false }
+});
 
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: false }));//avtivation for library
