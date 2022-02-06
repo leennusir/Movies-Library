@@ -3,6 +3,8 @@
 const express = require ("express"); //import library make server
 const app = express();// call node.js
 const axios = require("axios"); //Api
+require('dotenv').config()
+console.log(process.env.PORT) // remove this after you've confirmed it working
 
 const pg = require("pg");// call pgPostgress
 
@@ -194,7 +196,7 @@ function errorNotFound(req,res){
 
 
 client.connect().then(()=>{
-    app.listen(8080,()=>{ //run local server (i can bulit my web site) port : any number
+    app.listen(process.env.PORT ||3000,()=>{ //run local server (i can bulit my web site) port : any number
 
         console.log("serever run");
         });
